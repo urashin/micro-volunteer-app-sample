@@ -16,17 +16,27 @@ public class Entry : MonoBehaviour
 
     private IEnumerator ApiCallTest()
 	{
+        // API通信開始
         WebRequest.CallApi();
-
+        // 終了待ち
         while (true)
 		{
             if (WebRequest.Finished == false) yield return null;
             else break;
         }
 
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != WebRequestTest.EState.Success)
+		{
+            Debug.LogError("通信エラー");
+            yield return null;
+		}
+
+        // 受信した通信結果jsonをデコードしてみる
         var jsonDecode = new JsonDecodeTest();
-        var decodeData = jsonDecode.Test(WebRequest.Result);
-        Debug.Log("result:" + decodeData[0].title);
-        VersionText.text = decodeData[0].title;
+        var decodeData = jsonDecode.Test(WebRequest.ResultJson);
+        Debug.Log("result:" + decodeData.token);
+        VersionText.text = decodeData.token;
     }
 }
