@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using WebRequestConstant;
 using Utf8Json;
+using WebRequestConstant;
 
 
 public class WebRequest : MonoBehaviour
@@ -19,47 +19,13 @@ public class WebRequest : MonoBehaviour
     public BaseResponse ResultObject;
 
 
-    #region Dto
-
-    /// <summary>
-    /// 送信パラメータ
-    /// </summary>
-    private class BaseRequest { }
-    public class BaseResponse { }
-
-    private class SendParam : BaseRequest
-    {
-        public string userId;
-        public string password;
-    }
-    private class TestJsonData : BaseResponse  // こぴぺ
-    {
-        public string token { get; set; }
-    }
-    private class LoginRequest : BaseRequest
-    {
-        public string userId;
-        public string password;
-    }
-    private class CheckInRequest : BaseRequest
-    {
-        public string token;
-        public string x_geometry;
-        public string y_geometry;
-    }
-    public class CheckInResponse : BaseResponse
-    {
-        public string result;
-    }
-    #endregion
-
     #region CallApi
     /// <summary>
     /// 通信開始指示
     /// </summary>
     public void CallApi(string token)
     {
-        Debug.Log("welcome token: " + token);
+        Debug.Log("wel__come token: " + token);
 
         var method = "GET";
         var endpoint = "/v1/user/login";
@@ -67,7 +33,7 @@ public class WebRequest : MonoBehaviour
         param.userId = "my@email.org";
         param.password = "mypass";
 
-        StartCoroutine(AsyncWebRequest<TestJsonData>(method, endpoint, GenerateSendData(param)));
+        StartCoroutine(AsyncWebRequest<WebRequestConstant.TestJsonData>(method, endpoint, GenerateSendData(param)));
     }
 
     public void CallLoginApi(string email, string password)
@@ -78,16 +44,12 @@ public class WebRequest : MonoBehaviour
         param.userId = email;
         param.password = password;
 
-        StartCoroutine(AsyncWebRequest<TestJsonData>(method, endpoint, GenerateSendData(param)));
+        StartCoroutine(AsyncWebRequest<WebRequestConstant.TestJsonData>(method, endpoint, GenerateSendData(param)));
     }
-    public void CallCheckInApi(string token, string x_geometry, string y_geometry)
+    public void CallCheckInApi(CheckInRequest param)
     {
         var method = "POST";
         var endpoint = "/v1/matching/checkin";
-        var param = new CheckInRequest();
-        param.token = token;
-        param.x_geometry = x_geometry;
-        param.y_geometry = y_geometry;
 
         StartCoroutine(AsyncWebRequest<CheckInResponse>(method, endpoint, GenerateSendData(param)));
     }

@@ -135,7 +135,7 @@ public class Entry : MonoBehaviour
         //yield return new WaitForSeconds(2);
         yield return StartCoroutine(ApiCallCheckIn(
             "135.000", "36.0000",
-            (WebRequest.CheckInResponse response) => {
+            (CheckInResponse response) => {
                 Debug.Log("API finished! " + response.result);
                 VersionText.text = response.result;
             })
@@ -231,7 +231,7 @@ public class Entry : MonoBehaviour
         callback?.Invoke();
     }
 
-    private IEnumerator ApiCallCheckIn(string x_geometry, string y_geometry, Action<WebRequest.CheckInResponse> callback)
+    private IEnumerator ApiCallCheckIn(string x_geometry, string y_geometry, Action<CheckInResponse> callback)
     {
         // 時間計測用
         var startTime = Time.time;
@@ -240,7 +240,11 @@ public class Entry : MonoBehaviour
         PanelMessage.text = "チェックイン中です...";
 
         // API通信開始
-        WebRequest.Init().CallCheckInApi(m_token, x_geometry, y_geometry);
+        var param = new CheckInRequest();
+        param.token = m_token;
+        param.x_geometry = x_geometry;
+        param.y_geometry = y_geometry;
+        WebRequest.Init().CallCheckInApi(param);
         // 終了待ち
         while (true)
         {
@@ -264,7 +268,7 @@ public class Entry : MonoBehaviour
         }
         LoadingPanel.SetActive(false);
 
-        callback?.Invoke((WebRequest.CheckInResponse)WebRequest.ResultObject);
+        callback?.Invoke((CheckInResponse)WebRequest.ResultObject);
     }
 
     //---------------------------------------------------------------------------------------------
