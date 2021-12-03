@@ -63,6 +63,15 @@ namespace WebRequestConstant
     {
         public string result;
     }
+    // Get HandicapList
+    public class GetHandicapListRequest : BaseRequest
+    {
+        public string token;
+    }
+    public class GetHandicapListResponse : BaseResponse
+    {
+        public string result;
+    }
     #endregion
 
 }

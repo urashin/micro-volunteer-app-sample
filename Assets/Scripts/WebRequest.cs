@@ -63,6 +63,13 @@ public class WebRequest : MonoBehaviour
         StartCoroutine(AsyncWebRequest<HandicapRegisterResponse>(method, endpoint, GenerateSendData(param)));
     }
 
+    public void CallGetHandicapApi(GetHandicapListRequest param)
+    {
+        var method = "GET";
+        var endpoint = "/v1/user/handicaplist";
+
+        StartCoroutine(AsyncWebRequest<GetHandicapListResponse>(method, endpoint, GenerateSendData(param)));
+    }
     #endregion
 
     #region Methods

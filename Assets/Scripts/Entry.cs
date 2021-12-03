@@ -167,6 +167,14 @@ public class Entry : MonoBehaviour
                             Debug.Log("API finished! " + response._RawJson);
                             VersionText.text = response.result;
 
+                            // api2
+                            StartCoroutine(ApiCallGetHandicapList(
+                                (GetHandicapListResponse response2) => {
+                                    Debug.Log("API2 finished! " + response2._RawJson);
+                                    VersionText.text = response2.result;
+                                })
+                            );
+                            // end
 
                         })
                     );
@@ -266,6 +274,7 @@ public class Entry : MonoBehaviour
         if (WebRequest.CurrentState != EState.Success)
         {
             Debug.LogError("通信エラー");
+            VersionText.text = "Error";
             yield return null;
         }
 
@@ -280,6 +289,89 @@ public class Entry : MonoBehaviour
         callback?.Invoke((CheckInResponse)WebRequest.ResultObject);
     }
 
+    private IEnumerator ApiCallHandicapRegister(string comment, Action<HandicapRegisterResponse> callback)
+    {
+        // 時間計測用
+        var startTime = Time.time;
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "ヘルプ中です...";
+
+        // API通信開始
+        var param = new HandicapRegisterRequest();
+        param.token = m_token;
+        param.handicap_level = 1;
+        param.handicap_level = 1;
+        param.reliability_th = 1;
+        param.severity = 4;
+        param.comment = comment;
+        WebRequest.Init().CallHandicapRegisterApi(param);
+        // 終了待ち
+        while (true)
+        {
+            if (WebRequest.Finished == false) yield return null;
+            else break;
+        }
+
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != EState.Success)
+        {
+            Debug.LogError("通信エラー");
+            VersionText.text = "Error";
+            yield return null;
+        }
+
+        // wait
+        var elapsedTime = Time.time - startTime;
+        if (elapsedTime < 1)
+        {
+            yield return new WaitForSeconds(1 - elapsedTime);
+        }
+        LoadingPanel.SetActive(false);
+
+        callback?.Invoke((HandicapRegisterResponse)WebRequest.ResultObject);
+    }
+
+
+    private IEnumerator ApiCallGetHandicapList(Action<GetHandicapListResponse> callback)
+    {
+        // 時間計測用
+        var startTime = Time.time;
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "ヘルプ中です...";
+
+        // API通信開始
+        var param = new GetHandicapListRequest();
+        param.token = m_token;
+        WebRequest.Init().CallGetHandicapApi(param);
+        // 終了待ち
+        while (true)
+        {
+            if (WebRequest.Finished == false) yield return null;
+            else break;
+        }
+
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != EState.Success)
+        {
+            Debug.LogError("通信エラー");
+            VersionText.text = "Error";
+            yield return null;
+        }
+
+        // wait
+        var elapsedTime = Time.time - startTime;
+        if (elapsedTime < 1)
+        {
+            yield return new WaitForSeconds(1 - elapsedTime);
+        }
+        LoadingPanel.SetActive(false);
+
+        callback?.Invoke((GetHandicapListResponse)WebRequest.ResultObject);
+    }
     //---------------------------------------------------------------------------------------------
     // ボランティアの方が操作する処理（まだ全然未実装）
     //---------------------------------------------------------------------------------------------
