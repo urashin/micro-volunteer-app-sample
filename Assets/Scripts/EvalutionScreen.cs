@@ -9,12 +9,6 @@ public class EvalutionScreen : MonoBehaviour
 {
     [SerializeField] Button SendButton;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        gameObject.SetActive(false);        
-    }
-
     public void OpenScreen(Action callback)
 	{
         SendButton.onClick.AddListener(() =>
@@ -25,5 +19,10 @@ public class EvalutionScreen : MonoBehaviour
         });
 
         gameObject.SetActive(true);
+    }
+
+    public void Hide()
+	{
+        gameObject.SetActive(false);
     }
 }

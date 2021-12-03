@@ -5,21 +5,17 @@ public class ActionHistoryWindow : MonoBehaviour
 {
 	[SerializeField] private Button BackButton;
 
-	private void Awake()
-	{
-		gameObject.SetActive(false);
-		BackButton.onClick.AddListener(() =>
-	    {
-		   CloseWindow();
-	    });
-	}
-
 	public void OpenWindow()
 	{
 		gameObject.SetActive(true);
+		BackButton.onClick.AddListener(() =>
+		{
+			BackButton.onClick.RemoveAllListeners();
+			Hide();
+		});
 	}
 
-	private void CloseWindow()
+	public void Hide()
 	{
 		gameObject.SetActive(false);
 	}
