@@ -26,6 +26,10 @@ public class Entry : MonoBehaviour
     [SerializeField] EvalutionScreen EvalutionScreenDialog;
     [SerializeField] ActionHistoryWindow ActionHistoryWindow;
 
+    #endregion
+
+    #region
+    private string m_token = "";
 	#endregion
 
 	#region Method
@@ -37,6 +41,13 @@ public class Entry : MonoBehaviour
         SelectYesCancelDialog.Hide();
         EvalutionScreenDialog.Hide();
         ActionHistoryWindow.Hide();
+
+        // 端末にtokenが保存されているかを調べる
+        var token = PlayerPrefs.GetString("token", "");
+        if (token == "")
+		{
+            Debug.Log("tokenが端末に保存されていないので未登録ユーザ");
+		}
     }
 
 	// Start is called before the first frame update
@@ -71,9 +82,22 @@ public class Entry : MonoBehaviour
         StartCoroutine(AsyncCheckin());
     }
 
+    /// <summary>
+    /// 歯車アイコンがクリックされた時、履歴画面を表示する
+    /// </summary>
     private void OnclickActionHistoryButton()
 	{
         ActionHistoryWindow.OpenWindow();
+    }
+
+    /// <summary>
+    /// 取得したTokenを端末に保存する（保存先はセキュアでない領域です）
+    /// </summary>
+    /// <param name="token"></param>
+    private void SaveToken(string token)
+    {
+        PlayerPrefs.SetString("token", token);
+        PlayerPrefs.Save();
     }
 
     //---------------------------------------------------------------------------------------------
@@ -146,7 +170,7 @@ public class Entry : MonoBehaviour
         PanelMessage.text = "マッチング中です...";
 
         // API通信開始
-        WebRequest.CallApi();
+        WebRequest.CallApi(m_token);
         // 終了待ち
         while (true)
 		{
