@@ -22,6 +22,7 @@ public class Entry : MonoBehaviour
     [SerializeField] Button GpsCheckinButton;
     [SerializeField] Button QrCheckinButton;
     [SerializeField] Button HelpForMeButton;
+    [SerializeField] Button HelpListButton;
     [SerializeField] Button ConfigButton;
 
     [SerializeField] GameObject LoadingPanel;
@@ -82,7 +83,7 @@ public class Entry : MonoBehaviour
         var deeplink = processDeepLinkMngr.deeplinkURL;
         #if DEBUG
         deeplink = "http://example.com/sns-register?sns_id=U1234&token=11223344-5678-abcd-ef01-23456789abcd";
-        deeplink = "http://example.com/sns-register?sns_id=U6de8fd67fdbfc2ea917cd5cfe7d58d51&token=392b6a7a-a495-4bf8-8fc9-7a723808e925";
+        deeplink = "http://example.com/sns-register?sns_id=U6de8fd67fdbfc2ea917cd5cfe7d58d51&token=67a172d3-df4f-49a2-8fb8-9397abf6ff1c";
         #endif
         if (deeplink != ProcessDeepLinkMngr.NoDeeplink)
         {
