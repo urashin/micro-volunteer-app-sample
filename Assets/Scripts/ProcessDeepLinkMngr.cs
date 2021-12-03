@@ -8,6 +8,7 @@ public class ProcessDeepLinkMngr : MonoBehaviour
 {
     public static ProcessDeepLinkMngr Instance { get; private set; }
     public string deeplinkURL;
+    public const string NoDeeplink = "[none]";
 
     private void Awake()
     {
@@ -21,7 +22,7 @@ public class ProcessDeepLinkMngr : MonoBehaviour
                 onDeepLinkActivated(Application.absoluteURL);
             }
             // DeepLink Manager グローバル変数を初期化
-            else deeplinkURL = "[none]";
+            else deeplinkURL = NoDeeplink;
             DontDestroyOnLoad(gameObject);
         }
         else

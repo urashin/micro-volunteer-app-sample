@@ -47,25 +47,19 @@ public class Entry : MonoBehaviour
         EvalutionScreenDialog.Hide();
         ActionHistoryWindow.Hide();
 
-        var deeplink = processDeepLinkMngr.deeplinkURL;
-        deeplink = "http://example.com/sns-register?sns_id=Ufd9b51a10f5ac66057fb93a1d75f79e5&token=1e57a9d5-9c04-47e0-bc27-005c88ec0ad7";
-
-        if (deeplink != "")
-        {
-            var res = Utility.ParseDeepLink(deeplink);
-            VersionText.text = res.Endpoint;
-            SaveToken(res.QueryDictionary["token"]);
-        }
-
         // 端末にtokenが保存されているかを調べる
         var token = PlayerPrefs.GetString("token", "");
         if (token == "")
 		{
-            Debug.Log("tokenが端末に保存されていないので未登録ユーザ");
+            var msg = "tokenが端末に保存されていないので未登録ユーザ";
+            Debug.Log(msg);
+            VersionText.text = msg;
 		}
         else
         {
-            Debug.Log("token保存済み、登録ユーザ");
+            var msg = "token保存済み、登録ユーザ: " + token;
+            Debug.Log(msg);
+            VersionText.text = msg;
             m_token = token;
         }
     }
@@ -81,7 +75,30 @@ public class Entry : MonoBehaviour
         HelpForMeButton.interactable = false;
 
         ConfigButton.onClick.AddListener(OnclickActionHistoryButton);
+
+        // handle deeplink
+        var deeplink = processDeepLinkMngr.deeplinkURL;
+        #if DEBUG
+        deeplink = "http://example.com/sns-register?sns_id=U1234&token=11223344-5678-abcd-ef01-23456789abcd";
+        deeplink = "http://example.com/sns-register?sns_id=U6de8fd67fdbfc2ea917cd5cfe7d58d51&token=392b6a7a-a495-4bf8-8fc9-7a723808e925";
+        #endif
+        if (deeplink != ProcessDeepLinkMngr.NoDeeplink)
+        {
+            var res = Utility.ParseDeepLink(deeplink);
+            var text = "";
+            text = "cmd = " + res.Endpoint;
+
+            foreach(var kv in res.QueryDictionary)
+            {
+                text += "\n - [" + kv.Key + "] `" + kv.Value + "`";
+            }
+            VersionText.text = text;
+            m_token = res.QueryDictionary["token"];
+            SaveToken(m_token);
+        }
+
     }
+
 
     /// <summary>
     /// GPSでチェックインボタンクリック
@@ -97,6 +114,12 @@ public class Entry : MonoBehaviour
     /// </summary>
     private void OnClickQrCheckinButton()
     {
+        if (m_token == "")
+        {
+            // open LINE Bot account
+            Application.OpenURL("https://line.me/R/ti/p/@378tqgzf");
+            return;
+        }
         LoadingPanel.SetActive(true);
         PanelMessage.text = "チェックイン中です...";
         StartCoroutine(AsyncCheckin());
