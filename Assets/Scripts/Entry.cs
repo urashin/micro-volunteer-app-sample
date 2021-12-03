@@ -17,12 +17,14 @@ public class Entry : MonoBehaviour
     [SerializeField] Button GpsCheckinButton;
     [SerializeField] Button QrCheckinButton;
     [SerializeField] Button HelpForMeButton;
+    [SerializeField] Button ConfigButton;
 
     [SerializeField] GameObject LoadingPanel;
     [SerializeField] TextMeshProUGUI PanelMessage;
 
     [SerializeField] SelectDialog SelectYesCancelDialog;
     [SerializeField] EvalutionScreen EvalutionScreenDialog;
+    [SerializeField] ActionHistoryWindow ActionHistoryWindow;
 
     #endregion
 
@@ -39,6 +41,8 @@ public class Entry : MonoBehaviour
         HelpForMeButton.onClick.AddListener(OnClickHelpForMeButton);
         // HelpForMeButtonは、checkinするまで無効
         HelpForMeButton.interactable = false;
+
+        ConfigButton.onClick.AddListener(OnclickActionHistoryButton);
     }
 
     /// <summary>
@@ -58,6 +62,11 @@ public class Entry : MonoBehaviour
         LoadingPanel.SetActive(true);
         PanelMessage.text = "Checking in...";
         StartCoroutine(AsyncCheckin());
+    }
+
+    private void OnclickActionHistoryButton()
+	{
+        ActionHistoryWindow.OpenWindow();
     }
 
     //---------------------------------------------------------------------------------------------
