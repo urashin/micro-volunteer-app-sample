@@ -160,7 +160,16 @@ public class Entry : MonoBehaviour
                 // YESが押されたらAPI通信してみる
                 if (SelectYesCancelDialog.SelectedButton == SelectDialog.EButtonType.Yes)
 				{
-                    StartCoroutine(ApiCallTest(ApiFinishedCallback));
+                    //StartCoroutine(ApiCallTest(ApiFinishedCallback));
+                    StartCoroutine(ApiCallHandicapRegister(
+                        "たすけてー",
+                        (HandicapRegisterResponse response) => {
+                            Debug.Log("API finished! " + response._RawJson);
+                            VersionText.text = response.result;
+
+
+                        })
+                    );
                 }
             }
         );

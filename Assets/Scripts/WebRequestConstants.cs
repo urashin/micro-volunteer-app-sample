@@ -20,7 +20,9 @@ namespace WebRequestConstant
     /// 送信パラメータ
     /// </summary>
     public class BaseRequest { }
-    public class BaseResponse { }
+    public class BaseResponse {
+        public string _RawJson;
+    }
 
     public class SendParam : BaseRequest
     {
@@ -36,6 +38,7 @@ namespace WebRequestConstant
         public string userId;
         public string password;
     }
+    // CheckIn
     public class CheckInRequest : BaseRequest
     {
         public string token;
@@ -43,6 +46,20 @@ namespace WebRequestConstant
         public string y_geometry;
     }
     public class CheckInResponse : BaseResponse
+    {
+        public string result;
+    }
+    // HandicapRegister
+    public class HandicapRegisterRequest : BaseRequest
+    {
+        public string token;
+        public int handicap_type;
+        public int handicap_level;
+        public int reliability_th;
+        public int severity;
+        public string comment;
+    }
+    public class HandicapRegisterResponse : BaseResponse
     {
         public string result;
     }

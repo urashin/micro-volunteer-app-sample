@@ -46,6 +46,7 @@ public class WebRequest : MonoBehaviour
 
         StartCoroutine(AsyncWebRequest<WebRequestConstant.TestJsonData>(method, endpoint, GenerateSendData(param)));
     }
+
     public void CallCheckInApi(CheckInRequest param)
     {
         var method = "POST";
@@ -53,6 +54,15 @@ public class WebRequest : MonoBehaviour
 
         StartCoroutine(AsyncWebRequest<CheckInResponse>(method, endpoint, GenerateSendData(param)));
     }
+
+    public void CallHandicapRegisterApi(HandicapRegisterRequest param)
+    {
+        var method = "POST";
+        var endpoint = "/v1/user/handicap/register";
+
+        StartCoroutine(AsyncWebRequest<HandicapRegisterResponse>(method, endpoint, GenerateSendData(param)));
+    }
+
     #endregion
 
     #region Methods
@@ -90,6 +100,7 @@ public class WebRequest : MonoBehaviour
         {
             CurrentState = EState.Error;
             Debug.LogError(request.error);
+            Debug.LogError(request.downloadHandler.text);
             Finished = true;
             yield break;
         }
@@ -97,6 +108,7 @@ public class WebRequest : MonoBehaviour
         Debug.Log("request.downloadHandler.text:" + request.downloadHandler.text);
         ResultJson = request.downloadHandler.text;
         ResultObject = JsonSerializer.Deserialize<T>(ResultJson);
+        ResultObject._RawJson = ResultJson; // debug log 用
         CurrentState = EState.Success;
         Finished = true;
     }
