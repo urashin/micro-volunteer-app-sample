@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using WebRequestConstant;
 
 /// <summary>
 /// アプリ本体
@@ -12,7 +15,9 @@ public class Entry : MonoBehaviour
 	#region Inspector
 
 	[SerializeField] TextMeshProUGUI VersionText;
-    [SerializeField] WebRequestTest WebRequest;
+    [SerializeField] Utility utility;
+    [SerializeField] WebRequest WebRequest;
+    [SerializeField] ProcessDeepLinkMngr processDeepLinkMngr;
 
     [SerializeField] Button GpsCheckinButton;
     [SerializeField] Button QrCheckinButton;
@@ -46,8 +51,17 @@ public class Entry : MonoBehaviour
         var token = PlayerPrefs.GetString("token", "");
         if (token == "")
 		{
-            Debug.Log("tokenが端末に保存されていないので未登録ユーザ");
+            var msg = "tokenが端末に保存されていないので未登録ユーザ";
+            Debug.Log(msg);
+            VersionText.text = msg;
 		}
+        else
+        {
+            var msg = "token保存済み、登録ユーザ: " + token;
+            Debug.Log(msg);
+            VersionText.text = msg;
+            m_token = token;
+        }
     }
 
 	// Start is called before the first frame update
@@ -61,7 +75,30 @@ public class Entry : MonoBehaviour
         HelpForMeButton.interactable = false;
 
         ConfigButton.onClick.AddListener(OnclickActionHistoryButton);
+
+        // handle deeplink
+        var deeplink = processDeepLinkMngr.deeplinkURL;
+        #if DEBUG
+        deeplink = "http://example.com/sns-register?sns_id=U1234&token=11223344-5678-abcd-ef01-23456789abcd";
+        deeplink = "http://example.com/sns-register?sns_id=U6de8fd67fdbfc2ea917cd5cfe7d58d51&token=392b6a7a-a495-4bf8-8fc9-7a723808e925";
+        #endif
+        if (deeplink != ProcessDeepLinkMngr.NoDeeplink)
+        {
+            var res = Utility.ParseDeepLink(deeplink);
+            var text = "";
+            text = "cmd = " + res.Endpoint;
+
+            foreach(var kv in res.QueryDictionary)
+            {
+                text += "\n - [" + kv.Key + "] `" + kv.Value + "`";
+            }
+            VersionText.text = text;
+            m_token = res.QueryDictionary["token"];
+            SaveToken(m_token);
+        }
+
     }
+
 
     /// <summary>
     /// GPSでチェックインボタンクリック
@@ -77,6 +114,12 @@ public class Entry : MonoBehaviour
     /// </summary>
     private void OnClickQrCheckinButton()
     {
+        if (m_token == "")
+        {
+            // open LINE Bot account
+            Application.OpenURL("https://line.me/R/ti/p/@378tqgzf");
+            return;
+        }
         LoadingPanel.SetActive(true);
         PanelMessage.text = "チェックイン中です...";
         StartCoroutine(AsyncCheckin());
@@ -112,7 +155,14 @@ public class Entry : MonoBehaviour
 	{
         // ここでAPI通信する
         // ダミーで2秒待つ
-        yield return new WaitForSeconds(2);
+        //yield return new WaitForSeconds(2);
+        yield return StartCoroutine(ApiCallCheckIn(
+            "135.000", "36.0000",
+            (CheckInResponse response) => {
+                Debug.Log("API finished! " + response.result);
+                VersionText.text = response.result;
+            })
+        );
 
         // HelpForMeButtonを押せるようにする
         LoadingPanel.SetActive(false);
@@ -133,7 +183,24 @@ public class Entry : MonoBehaviour
                 // YESが押されたらAPI通信してみる
                 if (SelectYesCancelDialog.SelectedButton == SelectDialog.EButtonType.Yes)
 				{
-                    StartCoroutine(ApiCallTest(ApiFinishedCallback));
+                    //StartCoroutine(ApiCallTest(ApiFinishedCallback));
+                    StartCoroutine(ApiCallHandicapRegister(
+                        "たすけてー",
+                        (HandicapRegisterResponse response) => {
+                            Debug.Log("API finished! " + response._RawJson);
+                            VersionText.text = response.result;
+
+                            // api2
+                            StartCoroutine(ApiCallGetHandicapList(
+                                (GetHandicapListResponse response2) => {
+                                    Debug.Log("API2 finished! " + response2._RawJson);
+                                    VersionText.text = response2.result;
+                                })
+                            );
+                            // end
+
+                        })
+                    );
                 }
             }
         );
@@ -162,7 +229,7 @@ public class Entry : MonoBehaviour
     /// <param name="callback">通信完了後のcallback</param>
     /// <returns>IEnumerator</returns>
     private IEnumerator ApiCallTest(Action callback)
-	{
+    {
         // 時間計測用
         var startTime = Time.time;
 
@@ -170,21 +237,21 @@ public class Entry : MonoBehaviour
         PanelMessage.text = "マッチング中です...";
 
         // API通信開始
-        WebRequest.CallApi(m_token);
+        WebRequest.Init().CallApi(m_token);
         // 終了待ち
         while (true)
-		{
+        {
             if (WebRequest.Finished == false) yield return null;
             else break;
         }
 
         Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
 
-        if (WebRequest.CurrentState != WebRequestTest.EState.Success)
-		{
+        if (WebRequest.CurrentState != EState.Success)
+        {
             Debug.LogError("通信エラー");
             yield return null;
-		}
+        }
 
         // 受信した通信結果jsonをデコードしてみる
         var jsonDecode = new JsonDecodeTest();
@@ -204,6 +271,130 @@ public class Entry : MonoBehaviour
         callback?.Invoke();
     }
 
+    private IEnumerator ApiCallCheckIn(string x_geometry, string y_geometry, Action<CheckInResponse> callback)
+    {
+        // 時間計測用
+        var startTime = Time.time;
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "チェックイン中です...";
+
+        // API通信開始
+        var param = new CheckInRequest();
+        param.token = m_token;
+        param.x_geometry = x_geometry;
+        param.y_geometry = y_geometry;
+        WebRequest.Init().CallCheckInApi(param);
+        // 終了待ち
+        while (true)
+        {
+            if (WebRequest.Finished == false) yield return null;
+            else break;
+        }
+
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != EState.Success)
+        {
+            Debug.LogError("通信エラー");
+            VersionText.text = "Error";
+            yield return null;
+        }
+
+        // wait
+        var elapsedTime = Time.time - startTime;
+        if (elapsedTime < 1)
+        {
+            yield return new WaitForSeconds(1 - elapsedTime);
+        }
+        LoadingPanel.SetActive(false);
+
+        callback?.Invoke((CheckInResponse)WebRequest.ResultObject);
+    }
+
+    private IEnumerator ApiCallHandicapRegister(string comment, Action<HandicapRegisterResponse> callback)
+    {
+        // 時間計測用
+        var startTime = Time.time;
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "ヘルプ中です...";
+
+        // API通信開始
+        var param = new HandicapRegisterRequest();
+        param.token = m_token;
+        param.handicap_level = 1;
+        param.handicap_level = 1;
+        param.reliability_th = 1;
+        param.severity = 4;
+        param.comment = comment;
+        WebRequest.Init().CallHandicapRegisterApi(param);
+        // 終了待ち
+        while (true)
+        {
+            if (WebRequest.Finished == false) yield return null;
+            else break;
+        }
+
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != EState.Success)
+        {
+            Debug.LogError("通信エラー");
+            VersionText.text = "Error";
+            yield return null;
+        }
+
+        // wait
+        var elapsedTime = Time.time - startTime;
+        if (elapsedTime < 1)
+        {
+            yield return new WaitForSeconds(1 - elapsedTime);
+        }
+        LoadingPanel.SetActive(false);
+
+        callback?.Invoke((HandicapRegisterResponse)WebRequest.ResultObject);
+    }
+
+
+    private IEnumerator ApiCallGetHandicapList(Action<GetHandicapListResponse> callback)
+    {
+        // 時間計測用
+        var startTime = Time.time;
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "ヘルプ中です...";
+
+        // API通信開始
+        var param = new GetHandicapListRequest();
+        param.token = m_token;
+        WebRequest.Init().CallGetHandicapApi(param);
+        // 終了待ち
+        while (true)
+        {
+            if (WebRequest.Finished == false) yield return null;
+            else break;
+        }
+
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != EState.Success)
+        {
+            Debug.LogError("通信エラー");
+            VersionText.text = "Error";
+            yield return null;
+        }
+
+        // wait
+        var elapsedTime = Time.time - startTime;
+        if (elapsedTime < 1)
+        {
+            yield return new WaitForSeconds(1 - elapsedTime);
+        }
+        LoadingPanel.SetActive(false);
+
+        callback?.Invoke((GetHandicapListResponse)WebRequest.ResultObject);
+    }
     //---------------------------------------------------------------------------------------------
     // ボランティアの方が操作する処理（まだ全然未実装）
     //---------------------------------------------------------------------------------------------

@@ -2401,6 +2401,7 @@ GameObject:
   m_Component:
   - component: {fileID: 441950510}
   - component: {fileID: 441950511}
+  - component: {fileID: 441950513}
   - component: {fileID: 441950512}
   m_Layer: 0
   m_Name: Scripts
@@ -2421,7 +2422,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &441950511
 MonoBehaviour:
@@ -2436,7 +2437,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VersionText: {fileID: 1726072912}
+  utility: {fileID: 441950513}
   WebRequest: {fileID: 441950512}
+  processDeepLinkMngr: {fileID: 1816696098}
   GpsCheckinButton: {fileID: 778382134}
   QrCheckinButton: {fileID: 70824203}
   HelpForMeButton: {fileID: 106446867}
@@ -2455,7 +2458,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 441950509}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22f4ce0301a76d64684cc237642ad4f2, type: 3}
+  m_Script: {fileID: 11500000, guid: 929ad9aaa5d8b4aafa91c0b52a61c0c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &441950513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441950509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a965cfc283e4e8a8603b46c5b4684a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &479948135
@@ -6759,7 +6774,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1297076120
 GameObject:
@@ -8825,7 +8840,7 @@ RectTransform:
   - {fileID: 715011590}
   - {fileID: 416357222}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -10148,6 +10163,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810823679}
   m_CullTransparentMesh: 1
+--- !u!1 &1816696097
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1816696099}
+  - component: {fileID: 1816696098}
+  m_Layer: 0
+  m_Name: ProcessDeepLinkMngr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1816696098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816696097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65c25d2fd4d404fca8328c6ba02fa1c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deeplinkURL: 
+--- !u!4 &1816696099
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816696097}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.0067888, y: -0.49188372, z: -0.17714521}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1837113487
 GameObject:
   m_ObjectHideFlags: 0
