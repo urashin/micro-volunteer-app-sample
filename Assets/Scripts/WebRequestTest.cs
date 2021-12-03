@@ -20,6 +20,7 @@ public class WebRequestTest : MonoBehaviour
 
 	private const string AWS_HOST = "http://ec2-54-95-14-86.ap-northeast-1.compute.amazonaws.com";
     private const string AWS_PORT = "8080";
+    private const string ENTRY_NAME = "/v1/user/login";
 
     /// <summary>
     /// 送信パラメータ
@@ -33,21 +34,23 @@ public class WebRequestTest : MonoBehaviour
     /// <summary>
     /// 通信開始指示
     /// </summary>
-    public void CallApi()
+    /// <param name="token">token</param>
+    public void CallApi(string token)
     {
-        StartCoroutine(AsyncWebRequest());
+        StartCoroutine(AsyncWebRequest(token));
     }
 
     /// <summary>
     /// 非同期通信処理本体
     /// 成功した場合、このクラスのResultJsonに文字列として保持されます
     /// </summary>
+    /// <param name="token">token</param>
     /// <returns>IEnumerator</returns>
-    private IEnumerator AsyncWebRequest()
+    private IEnumerator AsyncWebRequest(string token)
     {
         CurrentState = EState.Connecting;
 
-        string requestUri = AWS_HOST + "" + ":" + AWS_PORT + "/v1/user/login";
+        string requestUri = AWS_HOST + "" + ":" + AWS_PORT + ENTRY_NAME;
         Debug.Log("request uri:" + requestUri);
 
         SendParam sendParam = new SendParam();
