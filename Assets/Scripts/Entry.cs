@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 /// <summary>
 /// アプリ本体
@@ -12,7 +14,9 @@ public class Entry : MonoBehaviour
 	#region Inspector
 
 	[SerializeField] TextMeshProUGUI VersionText;
+    [SerializeField] Utility utility;
     [SerializeField] WebRequestTest WebRequest;
+    [SerializeField] ProcessDeepLinkMngr processDeepLinkMngr;
 
     [SerializeField] Button GpsCheckinButton;
     [SerializeField] Button QrCheckinButton;
@@ -41,6 +45,15 @@ public class Entry : MonoBehaviour
         SelectYesCancelDialog.Hide();
         EvalutionScreenDialog.Hide();
         ActionHistoryWindow.Hide();
+
+        var deeplink = processDeepLinkMngr.deeplinkURL;
+        deeplink = "http://example.com/sns-register?sns_id=Ufd9b51a10f5ac66057fb93a1d75f79e5&token=1e57a9d5-9c04-47e0-bc27-005c88ec0ad7";
+
+        if (deeplink != "")
+        {
+            var res = Utility.ParseDeepLink(deeplink);
+            VersionText.text = res.Endpoint;
+        }
 
         // 端末にtokenが保存されているかを調べる
         var token = PlayerPrefs.GetString("token", "");
