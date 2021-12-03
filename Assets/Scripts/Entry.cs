@@ -133,9 +133,11 @@ public class Entry : MonoBehaviour
         // ここでAPI通信する
         // ダミーで2秒待つ
         //yield return new WaitForSeconds(2);
-        yield return StartCoroutine(ApiCallCheckIn("135.000", "36.0000",
+        yield return StartCoroutine(ApiCallCheckIn(
+            "135.000", "36.0000",
             (WebRequest.CheckInResponse response) => {
                 Debug.Log("API finished! " + response.result);
+                VersionText.text = response.result;
             })
         );
 
