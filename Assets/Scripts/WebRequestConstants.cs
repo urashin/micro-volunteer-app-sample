@@ -1,12 +1,12 @@
 namespace WebRequestConstant
 {
     public enum EState
-	{
+    {
         Init,
         Connecting,
         Success,
         Error
-	}
+    }
 
     public static class WebRequestConstant
     {
@@ -20,7 +20,8 @@ namespace WebRequestConstant
     /// 送信パラメータ
     /// </summary>
     public class BaseRequest { }
-    public class BaseResponse {
+    public class BaseResponse
+    {
         public string _RawJson;
     }
 
@@ -68,10 +69,20 @@ namespace WebRequestConstant
     {
         public string token;
     }
+    public class HandicapInfoDto
+    {
+        public int handicapinfo_id;
+        public string handicapped_id;
+        public int handicap_type;
+        public int handicap_level;
+        public int reliability_th;
+        public int severity;
+        public string comment;
+    }
     public class GetHandicapListResponse : BaseResponse
     {
-        public string result;
+        public HandicapInfoDto[] handicapInfoDtoList;
+
     }
     #endregion
-
 }

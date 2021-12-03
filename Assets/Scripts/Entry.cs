@@ -71,6 +71,8 @@ public class Entry : MonoBehaviour
         QrCheckinButton.onClick.AddListener(OnClickQrCheckinButton);
 
         HelpForMeButton.onClick.AddListener(OnClickHelpForMeButton);
+        HelpListButton.onClick.AddListener(OnClickHelpListButton);
+
         // HelpForMeButtonは、checkinするまで無効
         HelpForMeButton.interactable = false;
 
@@ -107,6 +109,28 @@ public class Entry : MonoBehaviour
     {
         // とりあえず同じ処理
         OnClickQrCheckinButton();
+    }
+
+    /// <summary>
+    /// 登録されたヘルプ一覧を取得
+    /// </summary>
+    private void OnClickHelpListButton()
+    {
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "ヘルプ一覧を取得中です...";
+
+        StartCoroutine(ApiCallGetHandicapList(
+            (GetHandicapListResponse response) => {
+                Debug.Log("API2 finished! " + response._RawJson);
+                var text = "";
+                foreach (var item in response.handicapInfoDtoList)
+                {
+                    text += " - " + item.comment + ", level: " + item.handicap_level + "\n";
+                }
+                VersionText.text = text;
+            })
+        );
+
     }
 
     /// <summary>
@@ -189,16 +213,6 @@ public class Entry : MonoBehaviour
                         (HandicapRegisterResponse response) => {
                             Debug.Log("API finished! " + response._RawJson);
                             VersionText.text = response.result;
-
-                            // api2
-                            StartCoroutine(ApiCallGetHandicapList(
-                                (GetHandicapListResponse response2) => {
-                                    Debug.Log("API2 finished! " + response2._RawJson);
-                                    VersionText.text = response2.result;
-                                })
-                            );
-                            // end
-
                         })
                     );
                 }
