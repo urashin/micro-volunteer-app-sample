@@ -37,10 +37,7 @@ public class SelectDialog : MonoBehaviour
 	/// </summary>
 	private Action m_callback;
 
-	/// <summary>
-	/// Unity Method
-	/// </summary>
-	private void Start()
+	public void Hide()
 	{
 		gameObject.SetActive(false);
 	}
@@ -56,7 +53,7 @@ public class SelectDialog : MonoBehaviour
 		{
 			ButtonClicked(EButtonType.Arrived);
 		});
-		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "Arrived";
+		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "到着しました";
 	}
 
 	/// <summary>
@@ -75,8 +72,8 @@ public class SelectDialog : MonoBehaviour
 			ButtonClicked(EButtonType.Cancel);
 		});
 
-		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "Yes";
-		Buttons[1].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
+		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "はい";
+		Buttons[1].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "キャンセル";
 	}
 
 	/// <summary>

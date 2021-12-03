@@ -26,15 +26,22 @@ public class Entry : MonoBehaviour
     [SerializeField] EvalutionScreen EvalutionScreenDialog;
     [SerializeField] ActionHistoryWindow ActionHistoryWindow;
 
-    #endregion
+	#endregion
 
-    #region Method
+	#region Method
 
-    // Start is called before the first frame update
-    void Start()
-    {
+	private void Awake()
+	{
         LoadingPanel.SetActive(false);
 
+        SelectYesCancelDialog.Hide();
+        EvalutionScreenDialog.Hide();
+        ActionHistoryWindow.Hide();
+    }
+
+	// Start is called before the first frame update
+	void Start()
+    {
         GpsCheckinButton.onClick.AddListener(OnClickGpsCheckinButton);
         QrCheckinButton.onClick.AddListener(OnClickQrCheckinButton);
 
@@ -60,7 +67,7 @@ public class Entry : MonoBehaviour
     private void OnClickQrCheckinButton()
     {
         LoadingPanel.SetActive(true);
-        PanelMessage.text = "Checking in...";
+        PanelMessage.text = "チェックイン中です...";
         StartCoroutine(AsyncCheckin());
     }
 
@@ -96,7 +103,7 @@ public class Entry : MonoBehaviour
         // 確認ダイアログ表示
         SelectYesCancelDialog.OpenDialog(
             2,
-            "Do you want to send?",
+            "送信しますか？",
             () =>
             {
                 // YESが押されたらAPI通信してみる
@@ -115,7 +122,7 @@ public class Entry : MonoBehaviour
     /// </summary>
     private void ApiFinishedCallback()
 	{
-        SelectYesCancelDialog.OpenDialog(1, "Volunteers are heading.", DisplayEvaluationScreen);
+        SelectYesCancelDialog.OpenDialog(1, "ボランティアの方が向かっています", DisplayEvaluationScreen);
     }
 
     /// <summary>
@@ -136,7 +143,7 @@ public class Entry : MonoBehaviour
         var startTime = Time.time;
 
         LoadingPanel.SetActive(true);
-        PanelMessage.text = "Matching...";
+        PanelMessage.text = "マッチング中です...";
 
         // API通信開始
         WebRequest.CallApi();
@@ -158,8 +165,8 @@ public class Entry : MonoBehaviour
         // 受信した通信結果jsonをデコードしてみる
         var jsonDecode = new JsonDecodeTest();
         var decodeData = jsonDecode.Test(WebRequest.ResultJson);
-        Debug.Log("result:" + decodeData.token);
-        VersionText.text = decodeData.token;
+        //Debug.Log("result:" + decodeData.token);
+        //VersionText.text = decodeData.token;
 
         // マッチングが早く完了した場合、メッセージがすぐに消えてしまうので、最低でも2秒は待つ
         var elapsedTime = Time.time - startTime;
