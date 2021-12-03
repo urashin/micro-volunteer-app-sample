@@ -2,25 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using WebRequestConstant;
+
 
 public class WebRequestTest : MonoBehaviour
 {
-    public enum EState
-	{
-        Init,
-        Connecting,
-        Success,
-        Error
-	}
 
     public EState CurrentState { get; private set; } = EState.Init;
 
 	public bool Finished { get; private set; } = false; 
 	public string ResultJson { get; private set; }
+    private string AWS_HOST = WebRequestConstant.WebRequestConstant.AWS_HOST;
+    private string AWS_PORT = WebRequestConstant.WebRequestConstant.AWS_PORT;
 
-	private const string AWS_HOST = "http://ec2-54-95-14-86.ap-northeast-1.compute.amazonaws.com";
-    private const string AWS_PORT = "8080";
-    private const string ENTRY_NAME = "/v1/user/login";
 
     /// <summary>
     /// 送信パラメータ
@@ -34,7 +28,6 @@ public class WebRequestTest : MonoBehaviour
     /// <summary>
     /// 通信開始指示
     /// </summary>
-    /// <param name="token">token</param>
     public void CallApi(string token)
     {
         StartCoroutine(AsyncWebRequest(token));
@@ -50,7 +43,7 @@ public class WebRequestTest : MonoBehaviour
     {
         CurrentState = EState.Connecting;
 
-        string requestUri = AWS_HOST + "" + ":" + AWS_PORT + ENTRY_NAME;
+        string requestUri = AWS_HOST + "" + ":" + AWS_PORT + "/v1/user/login";
         Debug.Log("request uri:" + requestUri);
 
         SendParam sendParam = new SendParam();

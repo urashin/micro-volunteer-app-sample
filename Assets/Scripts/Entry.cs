@@ -5,6 +5,7 @@ using TMPro;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using WebRequestConstant;
 
 /// <summary>
 /// アプリ本体
@@ -15,7 +16,7 @@ public class Entry : MonoBehaviour
 
 	[SerializeField] TextMeshProUGUI VersionText;
     [SerializeField] Utility utility;
-    [SerializeField] WebRequestTest WebRequest;
+    [SerializeField] WebRequest WebRequest;
     [SerializeField] ProcessDeepLinkMngr processDeepLinkMngr;
 
     [SerializeField] Button GpsCheckinButton;
@@ -53,6 +54,7 @@ public class Entry : MonoBehaviour
         {
             var res = Utility.ParseDeepLink(deeplink);
             VersionText.text = res.Endpoint;
+            SaveToken(res.QueryDictionary["token"]);
         }
 
         // 端末にtokenが保存されているかを調べる
@@ -61,6 +63,11 @@ public class Entry : MonoBehaviour
 		{
             Debug.Log("tokenが端末に保存されていないので未登録ユーザ");
 		}
+        else
+        {
+            Debug.Log("token保存済み、登録ユーザ");
+            m_token = token;
+        }
     }
 
 	// Start is called before the first frame update
@@ -125,7 +132,12 @@ public class Entry : MonoBehaviour
 	{
         // ここでAPI通信する
         // ダミーで2秒待つ
-        yield return new WaitForSeconds(2);
+        //yield return new WaitForSeconds(2);
+        yield return StartCoroutine(ApiCallCheckIn("135.000", "36.0000",
+            (WebRequest.CheckInResponse response) => {
+                Debug.Log("API finished! " + response.result);
+            })
+        );
 
         // HelpForMeButtonを押せるようにする
         LoadingPanel.SetActive(false);
@@ -175,7 +187,7 @@ public class Entry : MonoBehaviour
     /// <param name="callback">通信完了後のcallback</param>
     /// <returns>IEnumerator</returns>
     private IEnumerator ApiCallTest(Action callback)
-	{
+    {
         // 時間計測用
         var startTime = Time.time;
 
@@ -183,21 +195,21 @@ public class Entry : MonoBehaviour
         PanelMessage.text = "マッチング中です...";
 
         // API通信開始
-        WebRequest.CallApi(m_token);
+        WebRequest.Init().CallApi(m_token);
         // 終了待ち
         while (true)
-		{
+        {
             if (WebRequest.Finished == false) yield return null;
             else break;
         }
 
         Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
 
-        if (WebRequest.CurrentState != WebRequestTest.EState.Success)
-		{
+        if (WebRequest.CurrentState != EState.Success)
+        {
             Debug.LogError("通信エラー");
             yield return null;
-		}
+        }
 
         // 受信した通信結果jsonをデコードしてみる
         var jsonDecode = new JsonDecodeTest();
@@ -215,6 +227,42 @@ public class Entry : MonoBehaviour
         LoadingPanel.SetActive(false);
 
         callback?.Invoke();
+    }
+
+    private IEnumerator ApiCallCheckIn(string x_geometry, string y_geometry, Action<WebRequest.CheckInResponse> callback)
+    {
+        // 時間計測用
+        var startTime = Time.time;
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "チェックイン中です...";
+
+        // API通信開始
+        WebRequest.Init().CallCheckInApi(m_token, x_geometry, y_geometry);
+        // 終了待ち
+        while (true)
+        {
+            if (WebRequest.Finished == false) yield return null;
+            else break;
+        }
+
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != EState.Success)
+        {
+            Debug.LogError("通信エラー");
+            yield return null;
+        }
+
+        // wait
+        var elapsedTime = Time.time - startTime;
+        if (elapsedTime < 1)
+        {
+            yield return new WaitForSeconds(1 - elapsedTime);
+        }
+        LoadingPanel.SetActive(false);
+
+        callback?.Invoke((WebRequest.CheckInResponse)WebRequest.ResultObject);
     }
 
     //---------------------------------------------------------------------------------------------

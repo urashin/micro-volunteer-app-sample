@@ -2401,8 +2401,8 @@ GameObject:
   m_Component:
   - component: {fileID: 441950510}
   - component: {fileID: 441950511}
-  - component: {fileID: 441950512}
   - component: {fileID: 441950513}
+  - component: {fileID: 441950512}
   m_Layer: 0
   m_Name: Scripts
   m_TagString: Untagged
@@ -2458,7 +2458,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 441950509}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22f4ce0301a76d64684cc237642ad4f2, type: 3}
+  m_Script: {fileID: 11500000, guid: 929ad9aaa5d8b4aafa91c0b52a61c0c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &441950513
