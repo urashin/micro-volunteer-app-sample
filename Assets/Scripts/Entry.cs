@@ -32,9 +32,11 @@ public class Entry : MonoBehaviour
     [SerializeField] EvalutionScreen EvalutionScreenDialog;
     [SerializeField] ActionHistoryWindow ActionHistoryWindow;
 
+    [SerializeField] GpsLocation GpsLocationService;
+
     #endregion
 
-    #region
+    #region Private field
     private string m_token = "";
 	#endregion
 
@@ -102,14 +104,35 @@ public class Entry : MonoBehaviour
 
     }
 
-
     /// <summary>
     /// GPSでチェックインボタンクリック
     /// </summary>
     private void OnClickGpsCheckinButton()
     {
-        // とりあえず同じ処理
-        OnClickQrCheckinButton();
+        // token未取得の場合、登録処理から
+        if (m_token == "")
+        {
+            // open LINE Bot account
+            Application.OpenURL("https://line.me/R/ti/p/@378tqgzf");
+            return;
+        }
+
+        if (GpsLocationService.CurrentState != GpsLocation.EState.ServiceStart)
+        {
+            SelectYesCancelDialog.OpenDialog("GPSサービスが機能していません", new List<string>() { "OK" });
+            return;
+		}
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "チェックイン中です...";
+        StartCoroutine(AsyncCheckin());
+    }
+
+    /// <summary>
+    /// QRコードでチェックインボタンクリック(未実装)
+    /// </summary>
+    private void OnClickQrCheckinButton()
+    {
     }
 
     /// <summary>
@@ -132,22 +155,6 @@ public class Entry : MonoBehaviour
             })
         );
 
-    }
-
-    /// <summary>
-    /// QRコードでチェックインボタンクリック
-    /// </summary>
-    private void OnClickQrCheckinButton()
-    {
-        if (m_token == "")
-        {
-            // open LINE Bot account
-            Application.OpenURL("https://line.me/R/ti/p/@378tqgzf");
-            return;
-        }
-        LoadingPanel.SetActive(true);
-        PanelMessage.text = "チェックイン中です...";
-        StartCoroutine(AsyncCheckin());
     }
 
     /// <summary>
@@ -179,8 +186,6 @@ public class Entry : MonoBehaviour
     private IEnumerator AsyncCheckin()
 	{
         // ここでAPI通信する
-        // ダミーで2秒待つ
-        //yield return new WaitForSeconds(2);
         yield return StartCoroutine(ApiCallCheckIn(
             "135.000", "36.0000",
             (CheckInResponse response) => {
@@ -201,12 +206,12 @@ public class Entry : MonoBehaviour
 	{
         // 確認ダイアログ表示
         SelectYesCancelDialog.OpenDialog(
-            2,
             "送信しますか？",
+            new List<string>() { "OK", "Cancel" },
             () =>
             {
                 // YESが押されたらAPI通信してみる
-                if (SelectYesCancelDialog.SelectedButton == SelectDialog.EButtonType.Yes)
+                if (SelectYesCancelDialog.SelectedButton == SelectDialog.EButtonType.Button0)
 				{
                     //StartCoroutine(ApiCallTest(ApiFinishedCallback));
                     StartCoroutine(ApiCallHandicapRegister(
@@ -228,7 +233,7 @@ public class Entry : MonoBehaviour
     /// </summary>
     private void ApiFinishedCallback()
 	{
-        SelectYesCancelDialog.OpenDialog(1, "ボランティアの方が向かっています", DisplayEvaluationScreen);
+        SelectYesCancelDialog.OpenDialog("ボランティアの方が向かっています", new List<string>() { "OK" }, DisplayEvaluationScreen);
     }
 
     /// <summary>

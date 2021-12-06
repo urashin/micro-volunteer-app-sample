@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// ダイアログ制御をざっくり実装
@@ -22,9 +23,8 @@ public class SelectDialog : MonoBehaviour
 	/// </summary>
 	public enum EButtonType
 	{
-		Yes,
-		Cancel,
-		Arrived
+		Button0,
+		Button1,
 	}
 
 	/// <summary>
@@ -45,35 +45,35 @@ public class SelectDialog : MonoBehaviour
 	/// <summary>
 	/// ボタン1つモード（仮で、到着しましたボタンのみを表示）
 	/// </summary>
-	private void Set1ButtonMode()
+	private void Set1ButtonMode(List<string> buttonTexts)
 	{
 		Buttons[1].gameObject.SetActive(false);
 
 		Buttons[0].onClick.AddListener(() =>
 		{
-			ButtonClicked(EButtonType.Arrived);
+			ButtonClicked(EButtonType.Button0);
 		});
-		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "到着しました";
+		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = buttonTexts[0];
 	}
 
 	/// <summary>
 	/// YES, Cancelボタンモード
 	/// </summary>
-	private void Set2ButtonMode()
+	private void Set2ButtonMode(List<string> buttonTexts)
 	{
 		Buttons[1].gameObject.SetActive(true);
 
 		Buttons[0].onClick.AddListener(() =>
 		{
-			ButtonClicked(EButtonType.Yes);
+			ButtonClicked(EButtonType.Button0);
 		});
 		Buttons[1].onClick.AddListener(() =>
 		{
-			ButtonClicked(EButtonType.Cancel);
+			ButtonClicked(EButtonType.Button1);
 		});
 
-		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "はい";
-		Buttons[1].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "キャンセル";
+		Buttons[0].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = buttonTexts[0];
+		Buttons[1].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = buttonTexts[1];
 	}
 
 	/// <summary>
@@ -98,15 +98,15 @@ public class SelectDialog : MonoBehaviour
 	/// </summary>
 	/// <param name="message">表示するメッセージ</param>
 	/// <param name="callback">閉じた時のCallback</param>
-	public void OpenDialog(int buttonNum, string message, Action callback)
+	public void OpenDialog(string message, List<string> buttonTexts, Action callback = null)
 	{
-		switch (buttonNum)
+		switch (buttonTexts.Count)
 		{
 			case 1:
-				Set1ButtonMode();
+				Set1ButtonMode(buttonTexts);
 				break;
 			case 2:
-				Set2ButtonMode();
+				Set2ButtonMode(buttonTexts);
 				break;
 			default:
 				return;
