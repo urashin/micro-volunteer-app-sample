@@ -84,10 +84,10 @@ public class Entry : MonoBehaviour
 
         // handle deeplink
         var deeplink = processDeepLinkMngr.deeplinkURL;
-        #if DEBUG
+#if UNITY_EDITOR
         deeplink = "http://example.com/sns-register?sns_id=U1234&token=11223344-5678-abcd-ef01-23456789abcd";
         deeplink = "http://example.com/sns-register?sns_id=U6de8fd67fdbfc2ea917cd5cfe7d58d51&token=67a172d3-df4f-49a2-8fb8-9397abf6ff1c";
-        #endif
+#endif
         if (deeplink != ProcessDeepLinkMngr.NoDeeplink)
         {
             var res = Utility.ParseDeepLink(deeplink);
@@ -143,7 +143,7 @@ public class Entry : MonoBehaviour
 		}
 
         LoadingPanel.SetActive(true);
-        PanelMessage.text = "チェックイン中です...";
+        PanelMessage.text = "GPSチェックイン中です...";
         StartCoroutine(AsyncCheckin());
     }
 
@@ -152,6 +152,9 @@ public class Entry : MonoBehaviour
     /// </summary>
     private void OnClickQrCheckinButton()
     {
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "QRチェックイン中です...";
+        StartCoroutine(AsyncCheckin());
     }
 
     /// <summary>
