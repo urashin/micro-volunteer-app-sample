@@ -10,7 +10,7 @@ namespace WebRequestConstant
 
     public static class WebRequestConstant
     {
-        public const string AWS_HOST = "http://ec2-54-95-14-86.ap-northeast-1.compute.amazonaws.com";
+        public const string AWS_HOST = "http://micro-volunteer-supporter.com";
         public const string AWS_PORT = "8080";
     }
 
@@ -34,6 +34,7 @@ namespace WebRequestConstant
     {
         public string token { get; set; }
     }
+    // Login
     public class LoginRequest : BaseRequest
     {
         public string userId;

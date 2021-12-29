@@ -25,7 +25,7 @@ public class WebRequest : MonoBehaviour
     /// </summary>
     public void CallApi(string token)
     {
-        Debug.Log("wel__come token: " + token);
+        Debug.Log("welcome token: " + token);
 
         var method = "GET";
         var endpoint = "/v1/user/login";
