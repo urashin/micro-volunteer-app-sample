@@ -36,6 +36,13 @@ public class WebRequest : MonoBehaviour
         StartCoroutine(AsyncWebRequest<WebRequestConstant.TestJsonData>(method, endpoint, GenerateSendData(param)));
     }
 
+    public void CallUserRegisterApi(UserRegistRequest param)
+    {
+        var method = "POST";
+        var endpoint = "/v1/user/register";
+
+        StartCoroutine(AsyncWebRequest<WebRequestConstant.TestJsonData>(method, endpoint, GenerateSendData(param)));
+    }
     public void CallLoginApi(string email, string password)
     {
         var method = "GET";

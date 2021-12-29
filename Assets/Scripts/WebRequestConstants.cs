@@ -34,6 +34,17 @@ namespace WebRequestConstant
     {
         public string token { get; set; }
     }
+    // Regist
+    public class UserRegistRequest : BaseRequest
+    {
+        public string token;
+        public string email;
+        public string password;
+    }
+    public class UserRegistResponse : BaseResponse
+    {
+        public string result;
+    }
     // Login
     public class LoginRequest : BaseRequest
     {

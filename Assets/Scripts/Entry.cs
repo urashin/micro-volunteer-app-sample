@@ -107,6 +107,15 @@ public class Entry : MonoBehaviour
                 SnsRegisterScreen.OpenScreen((string email, string password) => {
                     var text2 = "callback " + email + ", " + password;
                     VersionText.text = text2;
+
+                    StartCoroutine(ApiCallUserRegister(
+                        email, password,
+                        (UserRegistResponse response) => {
+                            Debug.Log("UserRegister finished! " + response._RawJson);
+                            VersionText.text = response._RawJson;
+                        })
+                    );
+
                 });
             }
 
@@ -424,6 +433,48 @@ public class Entry : MonoBehaviour
         LoadingPanel.SetActive(false);
 
         callback?.Invoke((GetHandicapListResponse)WebRequest.ResultObject);
+    }
+
+
+    private IEnumerator ApiCallUserRegister(string email, string password, Action<UserRegistResponse> callback)
+    {
+        // 時間計測用
+        var startTime = Time.time;
+
+        LoadingPanel.SetActive(true);
+        PanelMessage.text = "登録中です...";
+
+        // API通信開始
+        var param = new UserRegistRequest();
+        param.token = m_token;
+        param.email = email;
+        param.password = password;
+        WebRequest.Init().CallUserRegisterApi(param);
+        // 終了待ち
+        while (true)
+        {
+            if (WebRequest.Finished == false) yield return null;
+            else break;
+        }
+
+        Debug.Log("WebRequest.CurrentState:" + WebRequest.CurrentState);
+
+        if (WebRequest.CurrentState != EState.Success)
+        {
+            Debug.LogError("通信エラー");
+            VersionText.text = "Error";
+            yield return null;
+        }
+
+        // wait
+        var elapsedTime = Time.time - startTime;
+        if (elapsedTime < 1)
+        {
+            yield return new WaitForSeconds(1 - elapsedTime);
+        }
+        LoadingPanel.SetActive(false);
+
+        callback?.Invoke((UserRegistResponse)WebRequest.ResultObject);
     }
     //---------------------------------------------------------------------------------------------
     // ボランティアの方が操作する処理（まだ全然未実装）
