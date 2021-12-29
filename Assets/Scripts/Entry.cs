@@ -31,6 +31,7 @@ public class Entry : MonoBehaviour
     [SerializeField] SelectDialog SelectYesCancelDialog;
     [SerializeField] EvalutionScreen EvalutionScreenDialog;
     [SerializeField] ActionHistoryWindow ActionHistoryWindow;
+    [SerializeField] SnsRegisterScreen SnsRegisterScreen;
 
     [SerializeField] GpsLocation GpsLocationService;
 
@@ -100,6 +101,15 @@ public class Entry : MonoBehaviour
             VersionText.text = text;
             m_token = res.QueryDictionary["token"];
             SaveToken(m_token);
+
+            if (res.Endpoint == "sns-register")
+            {
+                SnsRegisterScreen.OpenScreen((string email, string password) => {
+                    var text2 = "callback " + email + ", " + password;
+                    VersionText.text = text2;
+                });
+            }
+
         }
 
     }
