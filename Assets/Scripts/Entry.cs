@@ -32,7 +32,7 @@ public class Entry : MonoBehaviour
     [SerializeField] EvalutionScreen EvalutionScreenDialog;
     [SerializeField] ActionHistoryWindow ActionHistoryWindow;
 
-    [SerializeField] GpsLocation GpsLocationService;
+    [SerializeField] GpsLocationService GpsLocationService;
 
     #endregion
 
@@ -113,11 +113,11 @@ public class Entry : MonoBehaviour
         if (m_token == "")
         {
             // open LINE Bot account
-            Application.OpenURL("https://line.me/R/ti/p/@378tqgzf");
-            return;
+//            Application.OpenURL("https://line.me/R/ti/p/@378tqgzf");
+//            return;
         }
 
-        if (GpsLocationService.CurrentState != GpsLocation.EState.ServiceStart)
+        if (GpsLocationService.CurrentState != GpsLocationService.EState.ServiceStart)
         {
             SelectYesCancelDialog.OpenDialog("GPSサービスが機能していません", new List<string>() { "OK" });
             return;
