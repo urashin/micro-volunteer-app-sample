@@ -39,20 +39,37 @@ Unity Hubから、Unityのインストールが始まります。インストー
 
 ## リポジトリのクローン
 
-（まだ書いてません）
+[プロジェクトのリポジトリ](https://github.com/urashin/micro-volunteer-app-sample/tree/feature/AppBuildManual)をCloneするか、ファイル一式をZIPファイルとしてダウンロードして、展開しておきます。
 
 ## UnityEditorで開く
 
-（まだ書いてません）
+Unity Hubを起動し、右上の「開く」をクリックします。先にクローンしたフォルダ（micro-volunteer-app-sample）を選択します。
+プロジェクト（フォルダ）を開くと、Unity Editorが起動します。
+
+![UnityHub](UnityHub.png) 
+
+Unity Editorが起動したら、メニューのFile → Build Settingsを選択します。初期状態ではPlatformがPC, Mac & Linuxとなっているので、ここをAndroidを選択して、右下の「Switch Platform」ボタンを押します。
+
+![SwitchPlatform](SwitchPlatform.png) 
 
 ## Android端末のADB接続
 
-（まだ書いてません）
+Andorid端末をPC/Macに接続してデバッグ用端末として認識させます。これはUnity Editor固有の機能ではありません。
+ここでの説明は省略しますが、やることとしては、
+* Android端末を開発者モードにしてADBデバッグを有効にする
+* PC/Macに端末用のUSBドライバを入れる
+となります。
+
+Unityのインストール時に、Android SDK Toolsもインストールしているので、ADBコマンド等のツールもインストール先にあります。Unity EditorのメニューからEdit → Preferencesを選び、Andoridの項目のAndroid SDK Tools Installed with UnityのPathを参照してください。platform-toolsフォルダにADBコマンドが入っています。あらかじめ、ADBコマンドでAndroid端末が認識されているかを確認しておくとよいです。
+
+![Preferences](Preferences.png) 
 
 ## ビルド＆RUN
 
-（まだ書いてません）
+Unity Editorのメニューから、File → Build Settingsを選択します。右下のBuild & Runボタンを押すと、APKの保存先パスを聞いていますので、適当な名前を付けて保存します。ビルドが開始されてエラーがなければ、Android端末にAPKが自動的に転送＆実行開始されます。
+
+![BuildAndRun](BuildAndRun.png) 
 
 ## APK単体インストール
 
-（まだ書いてません）
+先にビルドしたAPKをなんらかの方法でAdnroidデバイスに持っていけば、インストール可能です。
